@@ -29,7 +29,8 @@ export const WorkflowEditor: FC<WorkflowEditorProps> = ({ workflowId }) => {
         <WorkflowAssistantProvider workflowId={workflowId}>
           <div className='flex h-dvh flex-col'>
             <EditorTopBar workflowId={workflowId} />
-            <div className='flex min-h-0 flex-1'>
+            {/* Clips side panels while they slide in, so their entrance never scrolls the page. */}
+            <div className='flex min-h-0 flex-1 overflow-hidden'>
               <div className='relative flex min-w-0 flex-1'>
                 <WorkflowCanvas workflowId={workflowId} />
                 <NodeSettingsPanel />

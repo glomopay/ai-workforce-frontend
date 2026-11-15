@@ -165,3 +165,6 @@ export const ASSISTANT_STARTER_PROMPTS = {
   ],
   refine: ['Explain what this workflow does, step by step', 'Only continue when the subject contains "refund"', 'What do I still need to fill in?'],
 };
+
+// How close to the bottom, in pixels, the assistant thread still counts as following new output.
+export const STICK_TO_BOTTOM_THRESHOLD = 48;
