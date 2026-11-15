@@ -9,6 +9,6 @@ export const CanvasEmptyHint: FC = () => (
       <MousePointer2 className='text-primary-soft relative size-6 drop-shadow-[0_0_10px_var(--primary)]' />
     </div>
     <span className='text-primary-soft mt-6 font-mono text-[10px] tracking-widest uppercase'>Canvas empty</span>
-    <p className='text-muted-foreground mt-2 max-w-xs text-sm'>Drag a trigger from the palette to start the workflow.</p>
+    <p className='text-muted-foreground mt-2 max-w-xs text-sm'>Drag a trigger from the palette, or describe the workflow to the assistant.</p>
   </div>
 );

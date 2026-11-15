@@ -1,6 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { WorkflowNotFoundPage, workflowNodeTypesQueryOptions, workflowQueryOptions } from '@/features/workflow-editor/public';
+import {
+  assistantMessagesQueryOptions,
+  WorkflowNotFoundPage,
+  workflowNodeTypesQueryOptions,
+  workflowQueryOptions,
+} from '@/features/workflow-editor/public';
 import { LoadingState } from '@/shared/components/public';
 
 export const Route = createFileRoute('/_authenticated/workflows/$workflowId')({
@@ -8,6 +13,7 @@ export const Route = createFileRoute('/_authenticated/workflows/$workflowId')({
     Promise.all([
       context.queryClient.ensureQueryData(workflowQueryOptions(params.workflowId)),
       context.queryClient.ensureQueryData(workflowNodeTypesQueryOptions),
+      context.queryClient.ensureQueryData(assistantMessagesQueryOptions(params.workflowId)),
     ]),
   pendingComponent: () => <LoadingState label='Loading workflow' />,
   errorComponent: WorkflowNotFoundPage,

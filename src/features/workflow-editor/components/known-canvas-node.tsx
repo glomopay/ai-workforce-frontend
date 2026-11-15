@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { NodeProps } from '@xyflow/react';
 
+import { NodeChangeMarker } from './node-change-marker';
 import { NodeIssuesBadge } from './node-issues-badge';
 import { NodePortHandles } from './node-port-handles';
 import { NodeRunIndicator } from './node-run-indicator';
@@ -31,6 +32,7 @@ export const KnownCanvasNode: FC<NodeProps<CanvasNode>> = ({ id, data, selected 
         <NodeTypeIcon icon={nodeType.icon} className='text-primary-soft size-9 drop-shadow-[0_0_10px_var(--primary)]' />
         <NodePortHandles type='target' count={nodeType.inputs.length} labels={nodeType.inputs.map(({ name }) => name)} />
         <NodePortHandles type='source' count={nodeType.outputs.length} labels={nodeType.outputs.map(({ name }) => name)} />
+        <NodeChangeMarker nodeId={id} />
         <NodeRunIndicator nodeId={id} />
         {missing.length > 0 && <NodeIssuesBadge missingLabels={missing.map((property) => property.displayName)} />}
       </div>

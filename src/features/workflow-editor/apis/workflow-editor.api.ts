@@ -19,9 +19,10 @@ import {
   WorkflowExecutionDetail,
   WorkflowExecutionsPage,
 } from '../types/workflow-execution.types';
+import { AssistantMessage } from '../types/workflow-assistant.types';
 import { toExecutionsSearchParams } from '../utils/execution-filters';
 
-const throwWorkflowError = async (response: Response, request: string): Promise<never> => {
+export const throwWorkflowError = async (response: Response, request: string): Promise<never> => {
   const body: WorkflowErrorResponse = await response.json();
   if (body.errorCode === 'WORKFLOW_NOT_FOUND') throw new WorkflowNotFoundError();
   if (body.errorCode === 'WORKFLOW_VERSION_CONFLICT') throw new WorkflowConflictError();
@@ -124,4 +125,18 @@ export const fetchNodeRuns = async (executionId: string, nodeId: string): Promis
   if (!response.ok) throw new Error(`GET ${url} failed with ${response.status}`);
   const { nodeRuns } = await response.json();
   return nodeRuns;
+};
+
+export const fetchAssistantMessages = async (workflowId: string): Promise<AssistantMessage[]> => {
+  const url = WORKFLOW_EDITOR_ENDPOINTS.ASSISTANT_MESSAGES(workflowId);
+  const response = await fetch(url, { credentials: 'include' });
+  if (!response.ok) await throwWorkflowError(response, `GET ${url}`);
+  const { messages } = await response.json();
+  return messages;
+};
+
+export const clearAssistantMessages = async (workflowId: string): Promise<void> => {
+  const url = WORKFLOW_EDITOR_ENDPOINTS.ASSISTANT_MESSAGES(workflowId);
+  const response = await fetch(url, { method: 'DELETE', credentials: 'include' });
+  if (!response.ok) await throwWorkflowError(response, `DELETE ${url}`);
 };

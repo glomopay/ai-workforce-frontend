@@ -17,6 +17,7 @@ export { DEFAULT_EXECUTION_FILTERS } from './constants/workflow-editor.constants
 export { parseExecutionFilters } from './utils/execution-filters';
 export type { ExecutionFilters } from './types/workflow-execution.types';
 export {
+  assistantMessagesQueryOptions,
   executionQueryOptions,
   executionsQueryOptions,
   workflowNodeTypesQueryOptions,

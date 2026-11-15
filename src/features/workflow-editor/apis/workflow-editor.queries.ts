@@ -8,7 +8,15 @@ import {
 } from '../constants/workflow-editor.constants';
 import { ExecutionNotFoundError } from '../errors/execution-not-found.error';
 import { WorkflowNotFoundError } from '../errors/workflow-not-found.error';
-import { fetchExecution, fetchExecutions, fetchNodeRuns, fetchWorkflow, fetchWorkflowNodeTypes, fetchWorkflowVersion } from './workflow-editor.api';
+import {
+  fetchAssistantMessages,
+  fetchExecution,
+  fetchExecutions,
+  fetchNodeRuns,
+  fetchWorkflow,
+  fetchWorkflowNodeTypes,
+  fetchWorkflowVersion,
+} from './workflow-editor.api';
 import { ExecutionFilters, NodeRun } from '../types/workflow-execution.types';
 import { countFinishedRuns, isExecutionFinished } from '../utils/execution-status';
 
@@ -67,5 +75,13 @@ export const nodeRunsQueryOptions = (executionId: string, nodeId: string, runs: 
       runs.some(({ status }) => status === 'WAITING'),
     ),
     queryFn: () => fetchNodeRuns(executionId, nodeId),
+    staleTime: Infinity,
+  });
+
+// Seeds the assistant chat, which owns the thread from then on and writes each finished turn back here.
+export const assistantMessagesQueryOptions = (workflowId: string) =>
+  queryOptions({
+    queryKey: WORKFLOW_EDITOR_QUERY_KEYS.ASSISTANT_MESSAGES(workflowId),
+    queryFn: () => fetchAssistantMessages(workflowId),
     staleTime: Infinity,
   });

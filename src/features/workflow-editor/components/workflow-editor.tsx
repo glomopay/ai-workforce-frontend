@@ -1,12 +1,15 @@
 import { FC } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 
+import { AssistantCanvasLock } from './assistant-canvas-lock';
+import { AssistantLeaveDialog } from './assistant-leave-dialog';
+import { EditorDock } from './editor-dock';
 import { EditorTopBar } from './editor-top-bar';
-import { NodePalette } from './node-palette';
 import { NodeSettingsPanel } from './node-settings-panel';
 import { WorkflowCanvas } from './workflow-canvas';
 import { useWorkflow } from '../hooks/use-workflow';
 import { useWorkflowNodeTypes } from '../hooks/use-workflow-node-types';
+import { WorkflowAssistantProvider } from '../providers/workflow-assistant.provider';
 import { WorkflowRunProvider } from '../providers/workflow-run.provider';
 import { toCanvasEdges, toCanvasNodes } from '../utils/workflow-graph';
 
@@ -23,14 +26,20 @@ export const WorkflowEditor: FC<WorkflowEditorProps> = ({ workflowId }) => {
   return (
     <ReactFlowProvider defaultNodes={toCanvasNodes(version.nodes, nodeTypes)} defaultEdges={toCanvasEdges(version.connections)}>
       <WorkflowRunProvider>
-        <div className='flex h-dvh flex-col'>
-          <EditorTopBar workflowId={workflowId} />
-          <div className='flex min-h-0 flex-1'>
-            <WorkflowCanvas workflowId={workflowId} />
-            <NodeSettingsPanel />
-            <NodePalette />
+        <WorkflowAssistantProvider workflowId={workflowId}>
+          <div className='flex h-dvh flex-col'>
+            <EditorTopBar workflowId={workflowId} />
+            <div className='flex min-h-0 flex-1'>
+              <div className='relative flex min-w-0 flex-1'>
+                <WorkflowCanvas workflowId={workflowId} />
+                <NodeSettingsPanel />
+                <AssistantCanvasLock />
+              </div>
+              <EditorDock workflowId={workflowId} />
+            </div>
           </div>
-        </div>
+          <AssistantLeaveDialog />
+        </WorkflowAssistantProvider>
       </WorkflowRunProvider>
     </ReactFlowProvider>
   );

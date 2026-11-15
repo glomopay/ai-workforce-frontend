@@ -169,6 +169,8 @@
   --animate-drawer-in: drawer-in 0.35s cubic-bezier(0.32, 0.72, 0, 1) both;
   --animate-grow-x: grow-x 0.7s cubic-bezier(0.32, 0.72, 0, 1) both;
   --animate-drawer-out: drawer-out 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  --animate-change-flash: change-flash 6s ease-out both;
+  --animate-sweep-x: sweep-x 2.6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 
   @keyframes scan {
     from {
@@ -260,6 +262,29 @@
   @keyframes grow-x {
     from {
       transform: scaleX(0);
+    }
+  }
+
+  /* Marks what the assistant or a restore changed: in fast, held, then gone. Opacity only, so it also runs on SVG groups. */
+  @keyframes change-flash {
+    from {
+      opacity: 0;
+    }
+    6%,
+    75% {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes sweep-x {
+    from {
+      transform: translateX(-30vw);
+    }
+    to {
+      transform: translateX(100vw);
     }
   }
 

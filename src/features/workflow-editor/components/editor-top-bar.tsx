@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { toast } from 'sonner';
 
+import { AssistantToggleButton } from './assistant-toggle-button';
 import { DeactivateWorkflowDialog } from './deactivate-workflow-dialog';
 import { EditorTitle } from './editor-title';
 import { IssuesErrorPanel } from './issues-error-panel';
@@ -89,6 +90,7 @@ export const EditorTopBar: FC<EditorTopBarProps> = ({ workflowId }) => {
       <PublishStatus activeVersionId={workflow.activeVersionId} versionId={workflow.version.id} />
       <div className='flex items-center gap-2'>
         {workflow.activeVersionId && <DeactivateWorkflowDialog workflowId={workflowId} workflowName={workflow.name} />}
+        <AssistantToggleButton />
         <RunButton
           disabled={isPending || isRunning || isAutomaticOnly}
           disabledReason={isAutomaticOnly ? AUTOMATIC_ONLY_RUN_REASON : undefined}

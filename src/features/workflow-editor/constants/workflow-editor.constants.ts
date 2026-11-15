@@ -19,6 +19,7 @@ export const WORKFLOW_EDITOR_ENDPOINTS = {
   VERSION: (workflowId: string, versionId: string) => `${BACKEND_URL}/workflows/${workflowId}/versions/${versionId}`,
   EXECUTION: (executionId: string) => `${BACKEND_URL}/workflow-executions/${executionId}`,
   NODE_RUNS: (executionId: string, nodeId: string) => `${BACKEND_URL}/workflow-executions/${executionId}/node-runs/${nodeId}`,
+  ASSISTANT_MESSAGES: (workflowId: string) => `${BACKEND_URL}/workflows/${workflowId}/assistant/messages`,
 };
 
 export const WORKFLOW_EDITOR_QUERY_KEYS = {
@@ -28,6 +29,7 @@ export const WORKFLOW_EDITOR_QUERY_KEYS = {
   EXECUTIONS_OF: (workflowId: string) => ['workflow-executions', 'list', workflowId],
   EXECUTIONS: (workflowId: string, filters: ExecutionFilters) => ['workflow-executions', 'list', workflowId, filters],
   EXECUTION: (executionId: string) => ['workflow-executions', executionId],
+  ASSISTANT_MESSAGES: (workflowId: string) => ['workflows', 'assistant-messages', workflowId],
   NODE_RUNS: (executionId: string, nodeId: string, finishedRuns: number, isWaiting: boolean) => [
     'workflow-executions',
     executionId,
@@ -134,4 +136,32 @@ export const EXECUTION_MODE_LABELS: Record<ExecutionMode, string> = {
   MANUAL: 'Manual',
   APPLICATION_EVENT: 'Event',
   SCHEDULE: 'Schedule',
+};
+
+// Matches the backend's message DTO cap.
+export const ASSISTANT_MESSAGE_MAX_LENGTH = 5000;
+
+// The counter shows once a message gets this close to the cap.
+export const ASSISTANT_MESSAGE_COUNTER_FROM = 4000;
+
+export const ASSISTANT_RENDER_THROTTLE = 40;
+
+// Read-only tools; anything the backend adds later shows under its own name.
+export const ASSISTANT_TOOL_LABELS: Record<string, string> = {
+  view_workflow: 'Current workflow',
+  get_node_output_schema: 'Output shape',
+};
+
+export const VERSION_THUMBNAIL_SIZE = { width: 112, height: 64, padding: 10 };
+
+// Canvas nodes are 96px squares positioned by their top-left corner.
+export const CANVAS_NODE_SIZE = 96;
+
+export const ASSISTANT_STARTER_PROMPTS = {
+  build: [
+    'When a Zoho Desk ticket is created, get the ticket and post its subject to Slack',
+    'Every weekday at 9:00, ask LibreChat for a summary and post it to Slack',
+    'When a GitHub issue is opened, hand it to the Coding Agent',
+  ],
+  refine: ['Explain what this workflow does, step by step', 'Only continue when the subject contains "refund"', 'What do I still need to fill in?'],
 };
