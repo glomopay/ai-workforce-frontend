@@ -6,6 +6,7 @@ import { useSelectedNode } from '../hooks/use-selected-node';
 import { useWorkflowNodeTypes } from '../hooks/use-workflow-node-types';
 import { findNodeType, hasNodeType } from '../utils/find-node-type';
 
+import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import { useExitAnimation } from '@/shared/hooks/use-exit-animation';
 import { cn } from '@/shared/utils/cn';
 
@@ -20,18 +21,20 @@ export const NodeSettingsPanel: FC = () => {
     <div
       onAnimationEnd={onAnimationEnd}
       className={cn('bg-sidebar w-96 shrink-0 overflow-hidden border-l', isExiting ? 'animate-drawer-out pointer-events-none' : 'animate-drawer-in')}>
-      <aside
-        key={node.id}
-        className={cn(
-          'nokey flex h-full w-96 flex-col gap-6 overflow-y-auto p-5 duration-300',
-          isExiting ? 'animate-out fade-out fill-mode-forwards' : 'animate-in fade-in slide-in-from-right-4 fill-mode-both',
-        )}>
-        {hasNodeType(nodeTypes, node.data.type, node.data.typeVersion) ? (
-          <KnownNodeSettings node={node} nodeType={findNodeType(nodeTypes, node.data.type, node.data.typeVersion)} />
-        ) : (
-          <UnknownNodeSettings node={node} />
-        )}
-      </aside>
+      <ScrollArea className='h-full w-96'>
+        <aside
+          key={node.id}
+          className={cn(
+            'nokey flex flex-col gap-6 p-5 duration-300',
+            isExiting ? 'animate-out fade-out fill-mode-forwards' : 'animate-in fade-in slide-in-from-right-4 fill-mode-both',
+          )}>
+          {hasNodeType(nodeTypes, node.data.type, node.data.typeVersion) ? (
+            <KnownNodeSettings node={node} nodeType={findNodeType(nodeTypes, node.data.type, node.data.typeVersion)} />
+          ) : (
+            <UnknownNodeSettings node={node} />
+          )}
+        </aside>
+      </ScrollArea>
     </div>
   );
 };

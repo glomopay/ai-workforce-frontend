@@ -4,6 +4,8 @@ import { ExecutionFiltersPanel } from './execution-filters-panel';
 import { ExecutionsList } from './executions-list';
 import { LiveIndicator } from './live-indicator';
 
+import { ScrollArea } from '@/shared/components/ui/scroll-area';
+
 interface ExecutionsSidebarProps {
   workflowId: string;
 }
@@ -18,8 +20,10 @@ export const ExecutionsSidebar: FC<ExecutionsSidebarProps> = ({ workflowId }) =>
       <LiveIndicator />
     </header>
     <ExecutionFiltersPanel />
-    <div className='min-h-0 flex-1 overflow-y-auto px-2 pb-2'>
-      <ExecutionsList workflowId={workflowId} />
-    </div>
+    <ScrollArea className='min-h-0 flex-1'>
+      <div className='px-2 pb-2'>
+        <ExecutionsList workflowId={workflowId} />
+      </div>
+    </ScrollArea>
   </aside>
 );
