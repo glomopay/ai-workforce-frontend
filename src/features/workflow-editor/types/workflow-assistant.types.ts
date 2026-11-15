@@ -5,30 +5,37 @@ import { NodeParameters } from './workflow-editor.types';
 // Outputs are port names (true/false, each/done) or indexes; the backend resolves them from the node type.
 export type AssistantOutput = string | number;
 
+// Mirrors the backend's editWorkflow input schema (workflow-assistant/engine/workflow-operations.ts).
 export type AssistantOperation =
-  | { op: 'addNode'; name: string; type: string; parameters?: NodeParameters; after?: { node: string; output?: AssistantOutput } }
-  | { op: 'updateParameters'; node: string; set: NodeParameters; unset?: string[] }
-  | { op: 'renameNode'; node: string; to: string }
-  | { op: 'removeNode'; node: string }
-  | { op: 'connect'; from: string; output?: AssistantOutput; to: string }
-  | { op: 'disconnect'; from: string; output?: AssistantOutput; to: string };
+  | {
+      action: 'addNode';
+      payload: { name: string; type: string; parameters?: NodeParameters; appendLocation?: { existingNode: string; outputPort?: AssistantOutput } };
+    }
+  | { action: 'updateParameters'; payload: { nodeName: string; set?: NodeParameters; unset?: string[] } }
+  | { action: 'renameNode'; payload: { nodeName: string; newName: string } }
+  | { action: 'removeNode'; payload: { nodeName: string } }
+  | { action: 'connect'; payload: { connectionStartNodeName: string; output?: AssistantOutput; connectionEndNodeName: string } }
+  | { action: 'disconnect'; payload: { connectionStartNodeName: string; output?: AssistantOutput; connectionEndNodeName: string } };
 
-export type AssistantOperationKind = AssistantOperation['op'];
+export type AssistantOperationKind = AssistantOperation['action'];
 
+// The output is text written for the model; a rejected batch still arrives as output, not as a tool error.
 export type AssistantTools = {
-  edit_workflow: { input: { operations: AssistantOperation[] }; output: unknown };
-  view_workflow: { input: Record<string, never>; output: unknown };
-  get_node_output_schema: { input: { node: string }; output: unknown };
+  editWorkflow: { input: { operations: AssistantOperation[] }; output: string };
 };
 
-export type AssistantDataParts = {
-  'workflow-version': { versionId: string; number: number };
-};
+// The backend sets workflowVersion on the finish chunk of a turn that saved one. `stopped` is set on this client only,
+// for a turn the user stopped, which the backend neither saves nor stores.
+export interface AssistantMessageMetadata {
+  workflowVersion?: { id: string; number: number };
+  stopped?: boolean;
+}
 
-// `stopped` is set on this client only, for a turn the user stopped; the backend saves nothing for those.
-export type AssistantMessage = UIMessage<{ stopped?: boolean }, AssistantDataParts, AssistantTools>;
+export type AssistantMessage = UIMessage<AssistantMessageMetadata, never, AssistantTools>;
 
 export type AssistantPart = AssistantMessage['parts'][number];
+
+export type EditWorkflowPart = Extract<AssistantPart, { type: 'tool-editWorkflow' }>;
 
 export type NodeChangeKind = 'added' | 'changed';
 

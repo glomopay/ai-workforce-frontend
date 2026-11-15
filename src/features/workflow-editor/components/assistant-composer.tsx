@@ -1,7 +1,6 @@
 import { FC, FormEvent, KeyboardEvent } from 'react';
 import { ArrowUp, Square } from 'lucide-react';
 
-import { AssistantContextChip } from './assistant-context-chip';
 import { ASSISTANT_MESSAGE_COUNTER_FROM, ASSISTANT_MESSAGE_MAX_LENGTH } from '../constants/workflow-editor.constants';
 import { InvalidWorkflowError } from '../errors/invalid-workflow.error';
 import { useAssistantChat } from '../hooks/use-assistant-chat';
@@ -35,7 +34,6 @@ export const AssistantComposer: FC<AssistantComposerProps> = ({ workflowId, draf
 
   return (
     <form onSubmit={submit} className='flex flex-col gap-2 border-t p-4'>
-      <AssistantContextChip />
       <div
         className={cn(
           'bg-background/60 focus-within:border-primary-soft/50 focus-within:shadow-primary/30 relative flex flex-col rounded-xl border transition-all focus-within:shadow-[0_0_24px]',

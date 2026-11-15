@@ -39,7 +39,7 @@ export const AssistantCanvasLock: FC = () => {
               <span className='text-primary-soft font-mono text-[10px] tracking-widest uppercase'>{step.verb}</span> {step.text}
             </>
           ) : (
-            <span className='text-muted-foreground'>Reading the canvas…</span>
+            <span className='text-muted-foreground'>Working out the change…</span>
           )}
         </span>
       </div>

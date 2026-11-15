@@ -14,7 +14,7 @@ export const AssistantThinking: FC = () => (
       ))}
     </span>
     <span className='text-muted-foreground relative overflow-hidden font-mono text-[10px] tracking-widest uppercase'>
-      Reading the canvas
+      Thinking
       <span className='animate-shimmer via-primary-soft/40 absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-transparent to-transparent' />
     </span>
   </div>

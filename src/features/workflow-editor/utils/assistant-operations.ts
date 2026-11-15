@@ -11,25 +11,29 @@ const withOutput = (from: string, output: AssistantOutput | undefined) => (outpu
 
 // Tool input streams in token by token, so an operation is labelled only once the fields it names have arrived.
 export const describeOperation = (operation: DeepPartial<AssistantOperation>): OperationLabel | undefined => {
-  switch (operation.op) {
-    case 'addNode':
-      return operation.name
-        ? { verb: 'Add', text: operation.after?.node ? `${operation.name} after ${operation.after.node}` : operation.name }
-        : undefined;
-    case 'updateParameters': {
-      const keys = [...Object.keys(operation.set ?? {}), ...(operation.unset ?? [])];
-      return operation.node && keys.length ? { verb: 'Set', text: `${keys.join(', ')} on ${operation.node}` } : undefined;
+  switch (operation.action) {
+    case 'addNode': {
+      const { name, appendLocation } = operation.payload ?? {};
+      if (!name) return undefined;
+      return { verb: 'Add', text: appendLocation?.existingNode ? `${name} after ${appendLocation.existingNode}` : name };
     }
-    case 'renameNode':
-      return operation.node && operation.to ? { verb: 'Rename', text: `${operation.node} → ${operation.to}` } : undefined;
+    case 'updateParameters': {
+      const { nodeName, set, unset } = operation.payload ?? {};
+      const keys = [...Object.keys(set ?? {}), ...(unset ?? [])];
+      return nodeName && keys.length ? { verb: 'Set', text: `${keys.join(', ')} on ${nodeName}` } : undefined;
+    }
+    case 'renameNode': {
+      const { nodeName, newName } = operation.payload ?? {};
+      return nodeName && newName ? { verb: 'Rename', text: `${nodeName} → ${newName}` } : undefined;
+    }
     case 'removeNode':
-      return operation.node ? { verb: 'Remove', text: operation.node } : undefined;
+      return operation.payload?.nodeName ? { verb: 'Remove', text: operation.payload.nodeName } : undefined;
     case 'connect':
-      return operation.from && operation.to ? { verb: 'Link', text: `${withOutput(operation.from, operation.output)} → ${operation.to}` } : undefined;
-    case 'disconnect':
-      return operation.from && operation.to
-        ? { verb: 'Unlink', text: `${withOutput(operation.from, operation.output)} → ${operation.to}` }
-        : undefined;
+    case 'disconnect': {
+      const { connectionStartNodeName: from, output, connectionEndNodeName: to } = operation.payload ?? {};
+      if (!from || !to) return undefined;
+      return { verb: operation.action === 'connect' ? 'Link' : 'Unlink', text: `${withOutput(from, output)} → ${to}` };
+    }
     default:
       return undefined;
   }
@@ -46,6 +50,6 @@ const KIND_LABELS: Record<AssistantOperationKind, [string, string]> = {
 
 export const summarizeOperations = (operations: AssistantOperation[]): string[] => {
   const counts = new Map<AssistantOperationKind, number>();
-  operations.forEach(({ op }) => counts.set(op, (counts.get(op) ?? 0) + 1));
-  return [...counts].map(([op, count]) => `${count} ${KIND_LABELS[op][count === 1 ? 0 : 1]}`);
+  operations.forEach(({ action }) => counts.set(action, (counts.get(action) ?? 0) + 1));
+  return [...counts].map(([action, count]) => `${count} ${KIND_LABELS[action][count === 1 ? 0 : 1]}`);
 };

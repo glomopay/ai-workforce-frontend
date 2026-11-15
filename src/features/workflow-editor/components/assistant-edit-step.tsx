@@ -16,7 +16,7 @@ export const AssistantEditStep: FC<AssistantEditStepProps> = ({ operation, state
   const nodeTypes = useWorkflowNodeTypes();
   const label = describeOperation(operation);
   if (!label) return null;
-  const icon = operation.op === 'addNode' ? nodeTypes.find(({ type }) => type === operation.type)?.icon : undefined;
+  const icon = operation.action === 'addNode' ? nodeTypes.find(({ type }) => type === operation.payload?.type)?.icon : undefined;
 
   return (
     <AssistantStep state={state} verb={label.verb} icon={icon && <NodeTypeIcon icon={icon} className='text-primary-soft size-3.5 shrink-0' />}>

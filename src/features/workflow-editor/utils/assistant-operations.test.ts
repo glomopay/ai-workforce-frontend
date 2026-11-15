@@ -4,25 +4,30 @@ import { describeOperation, summarizeOperations } from './assistant-operations';
 
 describe('describeOperation', () => {
   it('labels an added node and where it goes', () => {
-    expect(describeOperation({ op: 'addNode', name: 'Get Ticket', type: 'zohoDesk', after: { node: 'Zoho Desk Trigger' } })).toEqual({
-      verb: 'Add',
-      text: 'Get Ticket after Zoho Desk Trigger',
-    });
+    expect(
+      describeOperation({
+        action: 'addNode',
+        payload: { name: 'Get Ticket', type: 'zohoDesk', appendLocation: { existingNode: 'Zoho Desk Trigger' } },
+      }),
+    ).toEqual({ verb: 'Add', text: 'Get Ticket after Zoho Desk Trigger' });
   });
 
-  it('lists the keys a parameter update sets and clears', () => {
-    expect(describeOperation({ op: 'updateParameters', node: 'Slack', set: { channel: 'C123' }, unset: ['text'] })).toEqual({
+  it('lists the keys a parameter update sets and resets', () => {
+    expect(describeOperation({ action: 'updateParameters', payload: { nodeName: 'Slack', set: { channelId: 'C123' }, unset: ['text'] } })).toEqual({
       verb: 'Set',
-      text: 'channel, text on Slack',
+      text: 'channelId, text on Slack',
     });
   });
 
   it('names the output a link leaves from', () => {
-    expect(describeOperation({ op: 'connect', from: 'If', output: 'true', to: 'Slack' })).toEqual({ verb: 'Link', text: 'If (true) → Slack' });
+    expect(
+      describeOperation({ action: 'connect', payload: { connectionStartNodeName: 'If', output: 'true', connectionEndNodeName: 'Slack' } }),
+    ).toEqual({ verb: 'Link', text: 'If (true) → Slack' });
   });
 
   it('waits until a streaming operation names its nodes', () => {
-    expect(describeOperation({ op: 'connect', from: 'If' })).toBeUndefined();
+    expect(describeOperation({ action: 'connect', payload: { connectionStartNodeName: 'If' } })).toBeUndefined();
+    expect(describeOperation({ action: 'addNode' })).toBeUndefined();
     expect(describeOperation({})).toBeUndefined();
   });
 });
@@ -31,9 +36,9 @@ describe('summarizeOperations', () => {
   it('counts operations by kind', () => {
     expect(
       summarizeOperations([
-        { op: 'addNode', name: 'A', type: 'slack' },
-        { op: 'addNode', name: 'B', type: 'slack' },
-        { op: 'connect', from: 'A', to: 'B' },
+        { action: 'addNode', payload: { name: 'A', type: 'slack' } },
+        { action: 'addNode', payload: { name: 'B', type: 'slack' } },
+        { action: 'connect', payload: { connectionStartNodeName: 'A', connectionEndNodeName: 'B' } },
       ]),
     ).toEqual(['2 nodes added', '1 link']);
   });

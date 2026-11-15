@@ -146,11 +146,11 @@ export const ASSISTANT_MESSAGE_COUNTER_FROM = 4000;
 
 export const ASSISTANT_RENDER_THROTTLE = 40;
 
-// Read-only tools; anything the backend adds later shows under its own name.
-export const ASSISTANT_TOOL_LABELS: Record<string, string> = {
-  view_workflow: 'Current workflow',
-  get_node_output_schema: 'Output shape',
-};
+// The backend starts a rejected editWorkflow batch's output with this.
+export const ASSISTANT_REJECTED_BATCH_PREFIX = 'Nothing was applied';
+
+// Matches the backend's draft column width (WORKFLOW_DRAFT_LAYOUT.COLUMN_WIDTH), so pushed nodes land on its grid.
+export const ASSISTANT_LAYOUT_COLUMN_WIDTH = 200;
 
 export const VERSION_THUMBNAIL_SIZE = { width: 112, height: 64, padding: 10 };
 

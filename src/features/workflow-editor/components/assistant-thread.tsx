@@ -1,9 +1,10 @@
-import { FC } from 'react';
+import { FC, Fragment } from 'react';
 import { TriangleAlert } from 'lucide-react';
 
 import { AssistantEmptyState } from './assistant-empty-state';
 import { AssistantReply } from './assistant-reply';
 import { AssistantThinking } from './assistant-thinking';
+import { AssistantUnansweredNote } from './assistant-unanswered-note';
 import { AssistantUserMessage } from './assistant-user-message';
 import { useAssistantChat } from '../hooks/use-assistant-chat';
 import { useStickToBottom } from '../hooks/use-stick-to-bottom';
@@ -29,7 +30,10 @@ export const AssistantThread: FC<AssistantThreadProps> = ({ workflowId, onPickPr
           <div className='flex flex-col gap-5 p-4'>
             {messages.map((message, index) =>
               message.role === 'user' ? (
-                <AssistantUserMessage key={message.id} text={message.parts.flatMap((part) => (part.type === 'text' ? [part.text] : [])).join('\n')} />
+                <Fragment key={message.id}>
+                  <AssistantUserMessage text={message.parts.flatMap((part) => (part.type === 'text' ? [part.text] : [])).join('\n')} />
+                  {(messages[index + 1]?.role === 'user' || (index === messages.length - 1 && status === 'ready')) && <AssistantUnansweredNote />}
+                </Fragment>
               ) : (
                 <AssistantReply
                   key={message.id}

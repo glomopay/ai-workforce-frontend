@@ -28,11 +28,9 @@ export const WorkflowAssistantProvider: FC<WorkflowAssistantProviderProps> = ({ 
       id: workflowId,
       messages,
       transport: createAssistantTransport(workflowId),
-      onData: (part) => {
-        if (part.type !== 'data-workflow-version') return;
-        void queryClient.fetchQuery({ ...workflowQueryOptions(workflowId), staleTime: 0 }).then(showWorkflow);
-      },
+      // A turn that saved a version says so on its finish chunk; nothing changed, a conflict or a stop leave it out.
       onFinish: ({ message, messages: thread, isAbort }) => {
+        if (message.metadata?.workflowVersion) void queryClient.fetchQuery({ ...workflowQueryOptions(workflowId), staleTime: 0 }).then(showWorkflow);
         if (isAbort) created.messages = thread.map((item) => (item.id === message.id ? { ...item, metadata: { stopped: true } } : item));
         queryClient.setQueryData(assistantMessagesQueryOptions(workflowId).queryKey, created.messages);
       },

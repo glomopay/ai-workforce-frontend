@@ -7,6 +7,7 @@ import { FIT_VIEW_OPTIONS } from '../constants/workflow-editor.constants';
 import { CanvasChanges } from '../types/workflow-assistant.types';
 import { CanvasEdge, CanvasNode, Workflow } from '../types/workflow-editor.types';
 import { findCanvasChanges } from '../utils/canvas-changes';
+import { makeRoomForAddedNodes } from '../utils/make-room-for-added-nodes';
 import { toCanvasEdges, toCanvasNodes } from '../utils/workflow-graph';
 
 import { workflowsQueryOptions } from '@/features/workflows/public';
@@ -23,8 +24,11 @@ export const useShowSavedWorkflow = (workflowId: string, onChanges: (changes: Ca
     const selectedIds = new Set(getNodes().flatMap((node) => (node.selected ? [node.id] : [])));
     const nodes = toCanvasNodes(workflow.version.nodes, nodeTypes).map((node) => ({ ...node, selected: selectedIds.has(node.id) }));
     const edges = toCanvasEdges(workflow.version.connections);
-    onChanges(findCanvasChanges(workflow.version.id, { nodes: getNodes(), edges: getEdges() }, { nodes, edges }, nodeTypes));
-    setNodes(nodes);
+    const changes = findCanvasChanges(workflow.version.id, { nodes: getNodes(), edges: getEdges() }, { nodes, edges }, nodeTypes);
+    const addedIds = [...changes.nodes].flatMap(([id, kind]) => (kind === 'added' ? [id] : []));
+    onChanges(changes);
+    // Moved nodes differ from the saved version, so the editor shows them as unsaved until the user saves.
+    setNodes(makeRoomForAddedNodes(nodes, edges, addedIds));
     setEdges(edges);
     void fitView({ ...FIT_VIEW_OPTIONS, duration: 800 });
   };
