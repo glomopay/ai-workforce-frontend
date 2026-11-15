@@ -7,9 +7,13 @@ export interface WorkflowPort {
   name?: string;
 }
 
-export type WorkflowNodeGroup = 'trigger' | 'controlFlow' | 'action';
+export type WorkflowNodeGroup = 'trigger' | 'controlFlow' | 'transform' | 'action';
 
-export type NodeParameters = Record<string, string>;
+export type JsonValue = string | number | boolean | null | JsonValue[] | JsonObject;
+
+export type JsonObject = { [key: string]: JsonValue };
+
+export type NodeParameters = Record<string, JsonValue>;
 
 export interface NodePropertyOption {
   name: string;
@@ -21,7 +25,6 @@ export interface NodePropertyOption {
 interface BaseNodeProperty {
   name: string;
   displayName: string;
-  default: string;
   required?: boolean;
   description?: string;
   displayOptions?: { show: Record<string, string[]> };
@@ -29,6 +32,7 @@ interface BaseNodeProperty {
 
 export interface StringNodeProperty extends BaseNodeProperty {
   type: 'string';
+  default: string;
   placeholder?: string;
   noDataExpression?: boolean;
   typeOptions?: { rows?: number };
@@ -36,10 +40,17 @@ export interface StringNodeProperty extends BaseNodeProperty {
 
 export interface OptionsNodeProperty extends BaseNodeProperty {
   type: 'options';
+  default: string;
   options: NodePropertyOption[];
 }
 
-export type NodeProperty = StringNodeProperty | OptionsNodeProperty;
+export interface JsonNodeProperty extends BaseNodeProperty {
+  type: 'json';
+  default: JsonObject;
+  placeholder?: string;
+}
+
+export type NodeProperty = StringNodeProperty | OptionsNodeProperty | JsonNodeProperty;
 
 export interface WorkflowNodeType {
   type: string;

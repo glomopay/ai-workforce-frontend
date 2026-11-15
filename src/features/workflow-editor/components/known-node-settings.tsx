@@ -1,5 +1,6 @@
 import { FC, Suspense } from 'react';
 
+import { EditFieldsPreview } from './edit-fields-preview';
 import { NodeNameInput } from './node-name-input';
 import { NodeParametersForm } from './node-parameters-form';
 import { NodeRunData } from './node-run-data';
@@ -7,6 +8,7 @@ import { NodeRunIssues } from './node-run-issues';
 import { NodeSettingsHeader } from './node-settings-header';
 import { NodeTypeIcon } from './node-type-icon';
 import { RunDataLoading } from './run-data-loading';
+import { EDIT_FIELDS_TYPE } from '../constants/workflow-editor.constants';
 import { useWorkflowRun } from '../hooks/use-workflow-run';
 import { CanvasNode, WorkflowNodeType } from '../types/workflow-editor.types';
 import { findMissingProperties } from '../utils/node-parameters';
@@ -25,10 +27,15 @@ export const KnownNodeSettings: FC<KnownNodeSettingsProps> = ({ node, nodeType }
   const runs = runsByNode.get(node.id);
   const nodeIssues = issues.filter((issue) => isIssueForNode(issue, node.data.name));
   const missingCount = findMissingProperties(nodeType.properties, node.data.parameters).length;
-  const parameters = nodeType.properties.length ? (
-    <NodeParametersForm node={node} nodeType={nodeType} />
-  ) : (
-    <p className='text-muted-foreground text-xs'>This node has no settings.</p>
+  const parameters = (
+    <div className='flex flex-col gap-6'>
+      {nodeType.properties.length ? (
+        <NodeParametersForm node={node} nodeType={nodeType} />
+      ) : (
+        <p className='text-muted-foreground text-xs'>This node has no settings.</p>
+      )}
+      {nodeType.type === EDIT_FIELDS_TYPE && <EditFieldsPreview node={node} />}
+    </div>
   );
 
   return (

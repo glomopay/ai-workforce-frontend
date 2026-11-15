@@ -66,6 +66,24 @@ describe('toJsonForms', () => {
     });
   });
 
+  it('maps a json property to an object schema with its placeholder', () => {
+    const { schema, uischema } = toJsonForms(
+      nodeType([{ name: 'output', displayName: 'Fields', type: 'json', default: {}, placeholder: '{ "a": 1 }' }]),
+    );
+
+    expect(schema.properties?.output).toEqual({ type: 'object', title: 'Fields', default: {} });
+    expect(uischema.elements[0].options).toEqual({ placeholder: '{ "a": 1 }' });
+  });
+
+  it('gives a property type the editor does not know no schema type', () => {
+    const { schema, uischema } = toJsonForms(
+      nodeType([{ name: 'count', displayName: 'Count', type: 'number', default: 3 } as unknown as NodeProperty]),
+    );
+
+    expect(schema.properties?.count).toEqual({ title: 'Count', default: 3 });
+    expect(uischema.elements[0].options).toBeUndefined();
+  });
+
   it('requires an always-visible required property outright', () => {
     const { schema } = toJsonForms(nodeType([{ name: 'text', displayName: 'Text', type: 'string', default: '', required: true }]));
 

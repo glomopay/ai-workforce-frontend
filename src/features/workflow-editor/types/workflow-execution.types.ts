@@ -1,10 +1,12 @@
+import { JsonObject } from './workflow-editor.types';
+
 export type ExecutionStatus = 'QUEUED' | 'RUNNING' | 'WAITING' | 'SUCCEEDED' | 'FAILED' | 'CRASHED';
 
 export type ExecutionMode = 'MANUAL' | 'APPLICATION_EVENT' | 'SCHEDULE';
 
 export type NodeRunStatus = 'RUNNING' | 'WAITING' | 'SUCCEEDED' | 'FAILED';
 
-export type NodeData = Record<string, unknown>;
+export type NodeData = JsonObject;
 
 // A crash, or a failure outside any node, has a null nodeId. Runs that failed before nodeName was recorded
 // lack it, and older ones lack nodeId too, so both may be missing.

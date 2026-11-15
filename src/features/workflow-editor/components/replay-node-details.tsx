@@ -15,6 +15,7 @@ import { WorkflowExecutionDetail } from '../types/workflow-execution.types';
 import { summarizeNodeRunStatus } from '../utils/execution-status';
 import { findNodeType, hasNodeType } from '../utils/find-node-type';
 import { isPropertyVisible } from '../utils/is-property-visible';
+import { formatParameterValue } from '../utils/node-parameters';
 
 import { Button } from '@/shared/components/ui/button';
 import { cn } from '@/shared/utils/cn';
@@ -35,8 +36,8 @@ export const ReplayNodeDetails: FC<ReplayNodeDetailsProps> = ({ execution, node 
   const parameterEntries: [string, string][] = nodeType
     ? nodeType.properties
         .filter((property) => isPropertyVisible(property, parameters))
-        .map((property) => [property.displayName, parameters[property.name]])
-    : Object.entries(parameters);
+        .map((property) => [property.displayName, formatParameterValue(parameters[property.name])])
+    : Object.entries(parameters).map(([name, value]) => [name, formatParameterValue(value)]);
 
   return (
     <>

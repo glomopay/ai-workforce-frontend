@@ -7,13 +7,27 @@ const toCondition = (show: Record<string, string[]>): JsonSchema7 => ({
   required: Object.keys(show),
 });
 
+// A property type this editor doesn't know yet gets no schema type, so only the unsupported renderer matches it.
 const toPropertySchema = (property: NodeProperty): JsonSchema7 => {
-  const base = { type: 'string', title: property.displayName, description: property.description, default: property.default } as const;
-  if (property.type === 'string') return base;
-  return { ...base, oneOf: property.options.map((option) => ({ const: option.value, title: option.name, description: option.description })) };
+  const base = { title: property.displayName, description: property.description, default: property.default };
+  switch (property.type) {
+    case 'string':
+      return { ...base, type: 'string' };
+    case 'options':
+      return {
+        ...base,
+        type: 'string',
+        oneOf: property.options.map((option) => ({ const: option.value, title: option.name, description: option.description })),
+      };
+    case 'json':
+      return { ...base, type: 'object' };
+    default:
+      return base;
+  }
 };
 
 const toControlOptions = (property: NodeProperty): ControlElement['options'] => {
+  if (property.type === 'json') return { placeholder: property.placeholder };
   if (property.type !== 'string') return undefined;
   const rows = property.typeOptions?.rows ?? 1;
   return { placeholder: property.placeholder, ...(rows > 1 && { multi: true, rows }) };

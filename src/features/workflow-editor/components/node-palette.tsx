@@ -20,14 +20,13 @@ export const NodePalette: FC = () => {
             <span className='text-primary-soft font-mono text-[10px] tracking-widest uppercase'>Node palette</span>
             <span className='text-muted-foreground text-xs'>Drag a node onto the canvas, or open an app to pick an action.</span>
           </div>
-          {Object.entries(NODE_GROUP_LABELS).map(([group, label]) => (
-            <NodePaletteGroup
-              key={group}
-              label={label}
-              nodeTypes={nodeTypes.filter((nodeType) => nodeType.group === group)}
-              onOpen={setOpenNodeType}
-            />
-          ))}
+          {/* A backend older than this editor serves no node for some groups, so empty groups are left out. */}
+          {Object.entries(NODE_GROUP_LABELS)
+            .map(([group, label]) => ({ group, label, groupTypes: nodeTypes.filter((nodeType) => nodeType.group === group) }))
+            .filter(({ groupTypes }) => groupTypes.length > 0)
+            .map(({ group, label, groupTypes }) => (
+              <NodePaletteGroup key={group} label={label} nodeTypes={groupTypes} onOpen={setOpenNodeType} />
+            ))}
         </>
       )}
     </aside>

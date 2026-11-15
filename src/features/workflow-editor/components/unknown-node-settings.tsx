@@ -3,6 +3,7 @@ import { CircleHelp } from 'lucide-react';
 
 import { NodeSettingsHeader } from './node-settings-header';
 import { CanvasNode } from '../types/workflow-editor.types';
+import { formatParameterValue } from '../utils/node-parameters';
 
 interface UnknownNodeSettingsProps {
   node: CanvasNode;
@@ -24,7 +25,7 @@ export const UnknownNodeSettings: FC<UnknownNodeSettingsProps> = ({ node }) => (
       {Object.entries(node.data.parameters).map(([name, value]) => (
         <div key={name} className='flex flex-col gap-1'>
           <dt className='text-muted-foreground font-mono text-[10px] tracking-widest uppercase'>{name}</dt>
-          <dd className='text-xs break-all'>{value || '—'}</dd>
+          <dd className='text-xs break-all whitespace-pre-wrap'>{formatParameterValue(value) || '—'}</dd>
         </div>
       ))}
     </dl>

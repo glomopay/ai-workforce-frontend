@@ -41,6 +41,7 @@ export const WORKFLOW_EDITOR_QUERY_KEYS = {
 export const NODE_GROUP_LABELS: Record<WorkflowNodeGroup, string> = {
   trigger: 'Triggers',
   controlFlow: 'Control flow',
+  transform: 'Transform',
   action: 'Actions',
 };
 
@@ -75,6 +76,9 @@ export const LOOP_BODY_OUTPUT = '0';
 
 // Runs from the editor start at the Manual Trigger; event triggers only start published versions.
 export const MANUAL_TRIGGER_TYPE = 'manualTrigger';
+
+// The editor previews this node's output from the current run.
+export const EDIT_FIELDS_TYPE = 'editFields';
 
 // Matches the backend's save DTO: z.string().trim().min(1).max(128).
 export const NODE_NAME_MAX_LENGTH = 128;

@@ -2,7 +2,9 @@ import { FC, ReactNode, use } from 'react';
 import { useJsonForms } from '@jsonforms/react';
 
 import { NodePropertiesContext } from '../contexts/node-properties.context';
+import { JsonValue } from '../types/workflow-editor.types';
 import { isPropertyVisible } from '../utils/is-property-visible';
+import { isParameterEmpty } from '../utils/node-parameters';
 
 import { Label } from '@/shared/components/ui/label';
 
@@ -11,7 +13,7 @@ interface ParameterFieldProps {
   path: string;
   label: string;
   description?: string;
-  value: string;
+  value: JsonValue;
   visible: boolean;
   children: ReactNode;
 }
@@ -32,8 +34,10 @@ export const ParameterField: FC<ParameterFieldProps> = ({ id, path, label, descr
       </Label>
       {children}
       {description && <p className='text-muted-foreground text-xs leading-snug'>{description}</p>}
-      {isRequired && !value && <p className='text-destructive font-mono text-[10px] tracking-widest uppercase'>Required · draft still saves</p>}
-      {property.type === 'string' && property.noDataExpression && value.startsWith('=') && (
+      {isRequired && isParameterEmpty(value) && (
+        <p className='text-destructive font-mono text-[10px] tracking-widest uppercase'>Required · draft still saves</p>
+      )}
+      {property.type === 'string' && property.noDataExpression && typeof value === 'string' && value.startsWith('=') && (
         <p className='text-destructive font-mono text-[10px] tracking-widest uppercase'>Must be a fixed value, not a lookup</p>
       )}
     </div>
