@@ -1,5 +1,4 @@
 import { describeOperation, OperationLabel } from './assistant-operations';
-import { ASSISTANT_REJECTED_BATCH_PREFIX } from '../constants/workflow-editor.constants';
 import { AssistantPart, EditWorkflowPart } from '../types/workflow-assistant.types';
 
 export type ReplyBlock = { kind: 'text'; key: string; text: string } | { kind: 'steps'; key: string; parts: EditWorkflowPart[] };
@@ -17,21 +16,12 @@ export const toReplyBlocks = (parts: AssistantPart[]): ReplyBlock[] =>
     return blocks;
   }, []);
 
-// The backend rolls a failing batch back and says so in the output, which otherwise looks like any finished call.
-export const isRejectedBatch = (part: EditWorkflowPart): boolean =>
-  part.state === 'output-error' || (part.state === 'output-available' && part.output.startsWith(ASSISTANT_REJECTED_BATCH_PREFIX));
-
-// A rejected batch's output lists its errors as "- " bullets after the first line.
-export const findBatchErrors = (part: EditWorkflowPart): string[] => {
-  if (part.state === 'output-error') return [part.errorText];
-  if (part.state !== 'output-available') return [];
-  return part.output.split('\n').flatMap((line) => (line.startsWith('- ') ? [line.slice(2)] : []));
-};
+// The backend rolls a failing batch back and throws, listing the reasons as "- " bullets in the error text.
+export const findBatchErrors = (part: EditWorkflowPart): string[] =>
+  part.state === 'output-error' ? part.errorText.split('\n').flatMap((line) => (line.startsWith('- ') ? [line.slice(2)] : [])) : [];
 
 export const findAppliedOperations = (parts: AssistantPart[]) =>
-  parts.flatMap((part) =>
-    part.type === 'tool-editWorkflow' && part.state === 'output-available' && !isRejectedBatch(part) ? part.input.operations : [],
-  );
+  parts.flatMap((part) => (part.type === 'tool-editWorkflow' && part.state === 'output-available' ? part.input.operations : []));
 
 // The latest operation the assistant has written, for the canvas lock.
 export const describeLatestStep = (parts: AssistantPart[]): OperationLabel | undefined => {

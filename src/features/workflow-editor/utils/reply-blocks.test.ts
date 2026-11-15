@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { describeLatestStep, findAppliedOperations, findBatchErrors, isRejectedBatch, toReplyBlocks } from './reply-blocks';
+import { describeLatestStep, findAppliedOperations, findBatchErrors, toReplyBlocks } from './reply-blocks';
 import { AssistantPart, EditWorkflowPart } from '../types/workflow-assistant.types';
 
 const REJECTED: EditWorkflowPart = {
   type: 'tool-editWorkflow',
   toolCallId: 'bad',
-  state: 'output-available',
+  state: 'output-error',
   input: { operations: [{ action: 'removeNode', payload: { nodeName: 'Slack' } }] },
-  output: 'Nothing was applied; the workflow is unchanged.\nErrors:\n- Unknown node "Slack"\n- Second problem',
+  errorText: 'Nothing was applied; the workflow is unchanged.\nErrors:\n- Unknown node "Slack"\n- Second problem',
 };
 
 const APPLIED: EditWorkflowPart = {
@@ -37,13 +37,9 @@ describe('toReplyBlocks', () => {
 });
 
 describe('rejected batches', () => {
-  it('are told apart from applied ones by their output', () => {
-    expect(isRejectedBatch(REJECTED)).toBe(true);
-    expect(isRejectedBatch(APPLIED)).toBe(false);
-  });
-
-  it('list the errors from their output', () => {
+  it('list the errors from their error text', () => {
     expect(findBatchErrors(REJECTED)).toEqual(['Unknown node "Slack"', 'Second problem']);
+    expect(findBatchErrors(APPLIED)).toEqual([]);
   });
 
   it('are left out of the applied operations', () => {

@@ -3,11 +3,11 @@ import { FC } from 'react';
 import { AssistantEditStep } from './assistant-edit-step';
 import { StepState } from './assistant-step';
 import { EditWorkflowPart } from '../types/workflow-assistant.types';
-import { findBatchErrors, isRejectedBatch } from '../utils/reply-blocks';
+import { findBatchErrors } from '../utils/reply-blocks';
 
 // A call still without output once its turn has ended was cut off, and nothing from that turn was saved.
 const toStepState = (part: EditWorkflowPart, isLive: boolean): StepState => {
-  if (isRejectedBatch(part)) return 'failed';
+  if (part.state === 'output-error') return 'failed';
   if (part.state === 'output-available') return 'done';
   return isLive ? 'pending' : 'stopped';
 };

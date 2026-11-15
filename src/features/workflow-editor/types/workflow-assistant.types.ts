@@ -19,7 +19,7 @@ export type AssistantOperation =
 
 export type AssistantOperationKind = AssistantOperation['action'];
 
-// The output is text written for the model; a rejected batch still arrives as output, not as a tool error.
+// The output is text written for the model; a rejected batch arrives as a tool error.
 export type AssistantTools = {
   editWorkflow: { input: { operations: AssistantOperation[] }; output: string };
 };

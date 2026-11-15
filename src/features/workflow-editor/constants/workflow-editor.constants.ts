@@ -146,9 +146,6 @@ export const ASSISTANT_MESSAGE_COUNTER_FROM = 4000;
 
 export const ASSISTANT_RENDER_THROTTLE = 40;
 
-// The backend starts a rejected editWorkflow batch's output with this.
-export const ASSISTANT_REJECTED_BATCH_PREFIX = 'Nothing was applied';
-
 // Matches the backend's draft column width (WORKFLOW_DRAFT_LAYOUT.COLUMN_WIDTH), so pushed nodes land on its grid.
 export const ASSISTANT_LAYOUT_COLUMN_WIDTH = 200;
 
