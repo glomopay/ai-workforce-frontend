@@ -14,6 +14,7 @@ export default defineConfig({
       '/auth': 'http://localhost:51515',
       '/workflow-node-types': 'http://localhost:51515',
       '/workflow-executions': 'http://localhost:51515',
+      '/artifacts': 'http://localhost:51515',
       '/workflows': {
         target: 'http://localhost:51515',
         bypass: (req) => (req.headers.accept?.includes('text/html') ? req.url : undefined),

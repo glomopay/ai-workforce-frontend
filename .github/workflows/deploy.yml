@@ -1,0 +1,93 @@
+name: "Build and deploy"
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-south-1
+  AWS_ROLE_ARN: arn:aws:iam::891377225749:role/github-actions-ai-workforce-frontend
+  REPOSITORY: ai-workforce-frontend
+  CLUSTER: ai-workforce
+  SERVICE: web
+
+jobs:
+  build:
+    name: "Build and push"
+    runs-on: ubuntu-latest
+    outputs:
+      previous_digest: ${{ steps.previous.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Record the image that latest points to now
+        id: previous
+        run: |
+          DIGEST=$(aws ecr describe-images --repository-name "$REPOSITORY" \
+            --image-ids imageTag=latest --query 'imageDetails[0].imageDigest' --output text 2>/dev/null || true)
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+          echo "latest was $DIGEST"
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          tags: |
+            ${{ steps.ecr.outputs.registry }}/${{ env.REPOSITORY }}:${{ github.sha }}
+            ${{ steps.ecr.outputs.registry }}/${{ env.REPOSITORY }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: "Deploy"
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: web-deploy
+      cancel-in-progress: false
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Redeploy the web service
+        run: |
+          aws ecs update-service --cluster "$CLUSTER" --service "$SERVICE" --force-new-deployment > /dev/null
+          aws ecs wait services-stable --cluster "$CLUSTER" --services "$SERVICE"
+
+      - name: Roll latest back to the previous image
+        if: failure() && needs.build.outputs.previous_digest != '' && needs.build.outputs.previous_digest != 'None'
+        env:
+          PREVIOUS: ${{ needs.build.outputs.previous_digest }}
+        run: |
+          aws ecr batch-get-image --repository-name "$REPOSITORY" --image-ids imageDigest="$PREVIOUS" \
+            --query 'images[0].imageManifest' --output text > manifest.json
+          aws ecr put-image --repository-name "$REPOSITORY" --image-tag latest \
+            --image-manifest file://manifest.json
+          aws ecs update-service --cluster "$CLUSTER" --service "$SERVICE" --force-new-deployment > /dev/null
+          echo "::error::web did not become stable. latest now points back to $PREVIOUS and the service is redeploying with it."

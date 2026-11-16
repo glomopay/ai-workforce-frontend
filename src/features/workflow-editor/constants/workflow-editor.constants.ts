@@ -8,18 +8,16 @@ import {
   ExecutionWindowFilter,
 } from '../types/workflow-execution.types';
 
-import { BACKEND_URL } from '@/shared/constants/backend.constants';
-
 export const WORKFLOW_EDITOR_ENDPOINTS = {
-  WORKFLOW: (workflowId: string) => `${BACKEND_URL}/workflows/${workflowId}`,
-  ACTIVATE: (workflowId: string) => `${BACKEND_URL}/workflows/${workflowId}/activate`,
-  DEACTIVATE: (workflowId: string) => `${BACKEND_URL}/workflows/${workflowId}/deactivate`,
-  NODE_TYPES: `${BACKEND_URL}/workflow-node-types`,
-  EXECUTIONS: (workflowId: string) => `${BACKEND_URL}/workflows/${workflowId}/executions`,
-  VERSION: (workflowId: string, versionId: string) => `${BACKEND_URL}/workflows/${workflowId}/versions/${versionId}`,
-  EXECUTION: (executionId: string) => `${BACKEND_URL}/workflow-executions/${executionId}`,
-  NODE_RUNS: (executionId: string, nodeId: string) => `${BACKEND_URL}/workflow-executions/${executionId}/node-runs/${nodeId}`,
-  ASSISTANT_MESSAGES: (workflowId: string) => `${BACKEND_URL}/workflows/${workflowId}/assistant/messages`,
+  WORKFLOW: (workflowId: string) => `/workflows/${workflowId}`,
+  ACTIVATE: (workflowId: string) => `/workflows/${workflowId}/activate`,
+  DEACTIVATE: (workflowId: string) => `/workflows/${workflowId}/deactivate`,
+  NODE_TYPES: '/workflow-node-types',
+  EXECUTIONS: (workflowId: string) => `/workflows/${workflowId}/executions`,
+  VERSION: (workflowId: string, versionId: string) => `/workflows/${workflowId}/versions/${versionId}`,
+  EXECUTION: (executionId: string) => `/workflow-executions/${executionId}`,
+  NODE_RUNS: (executionId: string, nodeId: string) => `/workflow-executions/${executionId}/node-runs/${nodeId}`,
+  ASSISTANT_MESSAGES: (workflowId: string) => `/workflows/${workflowId}/assistant/messages`,
 };
 
 export const WORKFLOW_EDITOR_QUERY_KEYS = {
