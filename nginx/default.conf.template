@@ -1,0 +1,43 @@
+server {
+  listen 8080;
+  root /usr/share/nginx/html;
+
+  # A variable in proxy_pass makes nginx re-resolve the backend's ALB, whose IPs change.
+  resolver ${NGINX_RESOLVER} valid=30s ipv6=off;
+  set $backend https://ai-workforce.glomo.one;
+
+  proxy_http_version 1.1;
+  proxy_ssl_server_name on;
+  proxy_set_header Host ai-workforce.glomo.one;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  # The assistant streams its replies.
+  proxy_buffering off;
+  proxy_read_timeout 300s;
+
+  location = /healthz {
+    access_log off;
+    return 200 "ok\n";
+  }
+
+  location ~ ^/(auth|workflow-node-types|workflow-executions|artifacts)(/|$) {
+    proxy_pass $backend;
+  }
+
+  # /workflows/* is both an SPA page and an API route: page loads ask for HTML, fetch() doesn't.
+  location /workflows {
+    if ($http_accept ~* "text/html") {
+      rewrite ^ /index.html last;
+    }
+    proxy_pass $backend;
+  }
+
+  location /assets/ {
+    add_header Cache-Control "public, max-age=31536000, immutable";
+    try_files $uri =404;
+  }
+
+  location / {
+    add_header Cache-Control "no-cache";
+    try_files $uri /index.html;
+  }
+}
