@@ -97,13 +97,21 @@ export interface WorkflowVersion extends WorkflowGraph {
 export interface Workflow {
   id: string;
   name: string;
+  description: string | null;
   latestVersion: number;
   activeVersionId: string | null;
+  createdAt: string;
+  updatedAt: string;
   version: WorkflowVersion;
 }
 
 export interface SaveWorkflowInput extends WorkflowGraph {
   baseVersionId: string;
+}
+
+export interface UpdateWorkflowInput {
+  name: string;
+  description: string;
 }
 
 export type WorkflowErrorResponse =

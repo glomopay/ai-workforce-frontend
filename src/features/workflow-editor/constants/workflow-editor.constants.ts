@@ -14,6 +14,7 @@ export const WORKFLOW_EDITOR_ENDPOINTS = {
   DEACTIVATE: (workflowId: string) => `/workflows/${workflowId}/deactivate`,
   NODE_TYPES: '/workflow-node-types',
   EXECUTIONS: (workflowId: string) => `/workflows/${workflowId}/executions`,
+  VERSIONS: (workflowId: string) => `/workflows/${workflowId}/versions`,
   VERSION: (workflowId: string, versionId: string) => `/workflows/${workflowId}/versions/${versionId}`,
   EXECUTION: (executionId: string) => `/workflow-executions/${executionId}`,
   NODE_RUNS: (executionId: string, nodeId: string) => `/workflow-executions/${executionId}/node-runs/${nodeId}`,

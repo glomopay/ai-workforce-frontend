@@ -6,6 +6,7 @@ import { WorkflowHasIssuesError } from '../errors/workflow-has-issues.error';
 import { WorkflowNotFoundError } from '../errors/workflow-not-found.error';
 import {
   SaveWorkflowInput,
+  UpdateWorkflowInput,
   ValidationErrorResponse,
   Workflow,
   WorkflowErrorResponse,
@@ -21,6 +22,8 @@ import {
 } from '../types/workflow-execution.types';
 import { AssistantMessage } from '../types/workflow-assistant.types';
 import { toExecutionsSearchParams } from '../utils/execution-filters';
+
+import { ValidationError } from '@/features/workflows/public';
 
 export const throwWorkflowError = async (response: Response, request: string): Promise<never> => {
   const body: WorkflowErrorResponse = await response.json();
@@ -40,10 +43,11 @@ export const fetchWorkflow = async (workflowId: string): Promise<Workflow> => {
   return response.json();
 };
 
+// Each save creates a version; PATCH /workflows/:id only edits the name and description and ignores a graph.
 export const saveWorkflow = async (workflowId: string, input: SaveWorkflowInput): Promise<Workflow> => {
-  const url = WORKFLOW_EDITOR_ENDPOINTS.WORKFLOW(workflowId);
+  const url = WORKFLOW_EDITOR_ENDPOINTS.VERSIONS(workflowId);
   const response = await fetch(url, {
-    method: 'PATCH',
+    method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
@@ -54,6 +58,19 @@ export const saveWorkflow = async (workflowId: string, input: SaveWorkflowInput)
       Object.entries(errors).flatMap(([field, fieldErrors]) => fieldErrors.map((fieldError) => `${field}: ${fieldError}`)),
     );
   }
+  if (!response.ok) await throwWorkflowError(response, `POST ${url}`);
+  return response.json();
+};
+
+export const updateWorkflow = async (workflowId: string, input: UpdateWorkflowInput): Promise<Workflow> => {
+  const url = WORKFLOW_EDITOR_ENDPOINTS.WORKFLOW(workflowId);
+  const response = await fetch(url, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  if (response.status === 400) throw new ValidationError((await response.json()).errors);
   if (!response.ok) await throwWorkflowError(response, `PATCH ${url}`);
   return response.json();
 };

@@ -84,7 +84,7 @@ export const EditorTopBar: FC<EditorTopBarProps> = ({ workflowId }) => {
 
   return (
     <header className='animate-in fade-in slide-in-from-top-2 fill-mode-both relative z-10 flex items-center gap-6 border-b px-6 py-3 duration-500'>
-      <EditorTitle name={workflow.name} />
+      <EditorTitle workflowId={workflowId} />
       <WorkflowViewTabs workflowId={workflowId} />
       <SaveStatus key={workflow.version.number} isSaving={isPending} hasUnsavedChanges={hasUnsavedChanges} versionNumber={workflow.version.number} />
       <PublishStatus activeVersionId={workflow.activeVersionId} versionId={workflow.version.id} />
