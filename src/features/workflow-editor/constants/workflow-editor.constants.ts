@@ -113,6 +113,7 @@ export const EXECUTION_MODE_FILTERS: Record<ExecutionModeFilter, { label: string
   manual: { label: 'Manual', modes: ['MANUAL'] },
   event: { label: 'Event', modes: ['APPLICATION_EVENT'] },
   schedule: { label: 'Schedule', modes: ['SCHEDULE'] },
+  poll: { label: 'Polling', modes: ['POLL'] },
 };
 
 export const EXECUTION_WINDOW_FILTERS: Record<ExecutionWindowFilter, { label: string; ms: number | null }> = {
@@ -135,6 +136,7 @@ export const EXECUTION_MODE_LABELS: Record<ExecutionMode, string> = {
   MANUAL: 'Manual',
   APPLICATION_EVENT: 'Event',
   SCHEDULE: 'Schedule',
+  POLL: 'Polling',
 };
 
 // Matches the backend's message DTO cap.

@@ -2,7 +2,7 @@ import { JsonObject } from './workflow-editor.types';
 
 export type ExecutionStatus = 'QUEUED' | 'RUNNING' | 'WAITING' | 'SUCCEEDED' | 'FAILED' | 'CRASHED';
 
-export type ExecutionMode = 'MANUAL' | 'APPLICATION_EVENT' | 'SCHEDULE';
+export type ExecutionMode = 'MANUAL' | 'APPLICATION_EVENT' | 'SCHEDULE' | 'POLL';
 
 export type NodeRunStatus = 'RUNNING' | 'WAITING' | 'SUCCEEDED' | 'FAILED';
 
@@ -41,7 +41,7 @@ export interface WorkflowExecutionsPage {
 
 export type ExecutionStatusFilter = 'all' | 'succeeded' | 'failed' | 'running' | 'waiting';
 
-export type ExecutionModeFilter = 'all' | 'manual' | 'event' | 'schedule';
+export type ExecutionModeFilter = 'all' | 'manual' | 'event' | 'schedule' | 'poll';
 
 export type ExecutionWindowFilter = 'all' | '24h' | '7d' | '30d';
 

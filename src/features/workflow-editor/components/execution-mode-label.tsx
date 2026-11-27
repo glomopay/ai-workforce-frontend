@@ -1,10 +1,10 @@
 import { FC } from 'react';
-import { Clock, MousePointerClick, Zap } from 'lucide-react';
+import { Clock, MousePointerClick, RefreshCw, Zap } from 'lucide-react';
 
 import { EXECUTION_MODE_LABELS } from '../constants/workflow-editor.constants';
 import { ExecutionMode } from '../types/workflow-execution.types';
 
-const MODE_ICONS = { MANUAL: MousePointerClick, APPLICATION_EVENT: Zap, SCHEDULE: Clock };
+const MODE_ICONS = { MANUAL: MousePointerClick, APPLICATION_EVENT: Zap, SCHEDULE: Clock, POLL: RefreshCw };
 
 interface ExecutionModeLabelProps {
   mode: ExecutionMode;

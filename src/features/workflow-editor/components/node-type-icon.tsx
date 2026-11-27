@@ -4,6 +4,7 @@ import { DynamicIcon, IconName, iconNames } from 'lucide-react/dynamic';
 
 import { CodingAgentIcon } from './coding-agent-icon';
 import { GitHubIcon } from './github-icon';
+import { GmailIcon } from './gmail-icon';
 import { GoogleSheetsIcon } from './google-sheets-icon';
 import { LibreChatIcon } from './librechat-icon';
 import { MetabaseIcon } from './metabase-icon';
@@ -19,6 +20,7 @@ const BUNDLED_ICONS: Record<string, FC<{ className: string }>> = {
   github: GitHubIcon,
   'google-sheets': GoogleSheetsIcon,
   metabase: MetabaseIcon,
+  gmail: GmailIcon,
   code: CodingAgentIcon,
 };
 

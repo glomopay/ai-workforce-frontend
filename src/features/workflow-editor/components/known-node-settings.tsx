@@ -30,6 +30,7 @@ export const KnownNodeSettings: FC<KnownNodeSettingsProps> = ({ node, nodeType }
   const missingCount = useMissingLabels(nodeType, node.data).length;
   const parameters = (
     <div className='flex flex-col gap-6'>
+      <p className='text-muted-foreground text-xs leading-snug'>{nodeType.description}</p>
       {nodeType.credentials?.map(({ name }) => (
         <NodeCredentialField key={name} node={node} credentialTypeName={name} />
       ))}
