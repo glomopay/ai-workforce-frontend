@@ -7,7 +7,7 @@ const node = (id: string, x: number, y = 0): CanvasNode => ({
   id,
   type: 'workflowNode',
   position: { x, y },
-  data: { name: id, type: 'slack', typeVersion: 1, parameters: {} },
+  data: { name: id, type: 'slack', typeVersion: 1, parameters: {}, credentials: {} },
 });
 
 const edge = (source: string, target: string): CanvasEdge => ({ id: `${source}->${target}`, source, target });

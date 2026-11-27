@@ -27,6 +27,17 @@ describe('toJsonText', () => {
     expect(toJsonText({})).toBe('');
     expect(toJsonText({ a: 1 })).toBe('{\n  "a": 1\n}');
   });
+
+  it('keeps each list of scalars on one line, so rows read one per line', () => {
+    expect(toJsonText({ values: [['={{ $json.x }}', 'Open', 2, null], [true]] })).toBe(
+      '{\n  "values": [\n    ["={{ $json.x }}", "Open", 2, null],\n    [true]\n  ]\n}',
+    );
+  });
+
+  it('formats objects inside lists and empty containers like JSON.stringify', () => {
+    const value = { items: [{ a: 1 }, []], empty: {} };
+    expect(toJsonText(value)).toBe(JSON.stringify(value, null, 2));
+  });
 });
 
 describe('toStableJson', () => {

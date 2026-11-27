@@ -32,6 +32,8 @@ export const throwWorkflowError = async (response: Response, request: string): P
   if (body.errorCode === 'INVALID_WORKFLOW_GRAPH') throw new InvalidWorkflowError(body.errors);
   if (body.errorCode === 'WORKFLOW_HAS_ISSUES') throw new WorkflowHasIssuesError(body.errors);
   if (body.errorCode === 'WORKFLOW_VERSION_NOT_FOUND') throw new Error('This version no longer exists. Reload the workflow and try again.');
+  if (body.errorCode === 'WORKFLOW_CREDENTIAL_NOT_FOUND')
+    throw new Error('A node uses an account that was deleted or isn’t yours. Pick another one in its node panel.');
   throw new Error(`${request} failed with ${response.status}`);
 };
 

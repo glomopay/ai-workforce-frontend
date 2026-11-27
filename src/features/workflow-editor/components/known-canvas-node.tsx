@@ -6,18 +6,18 @@ import { NodeIssuesBadge } from './node-issues-badge';
 import { NodePortHandles } from './node-port-handles';
 import { NodeRunIndicator } from './node-run-indicator';
 import { NodeTypeIcon } from './node-type-icon';
+import { useMissingLabels } from '../hooks/use-missing-labels';
 import { useWorkflowNodeTypes } from '../hooks/use-workflow-node-types';
 import { useWorkflowRun } from '../hooks/use-workflow-run';
 import { CanvasNode } from '../types/workflow-editor.types';
 import { findNodeType } from '../utils/find-node-type';
-import { findMissingProperties } from '../utils/node-parameters';
 import { isIssueForNode } from '../utils/run-issues';
 
 import { cn } from '@/shared/utils/cn';
 
 export const KnownCanvasNode: FC<NodeProps<CanvasNode>> = ({ id, data, selected }) => {
   const nodeType = findNodeType(useWorkflowNodeTypes(), data.type, data.typeVersion);
-  const missing = findMissingProperties(nodeType.properties, data.parameters);
+  const missingLabels = useMissingLabels(nodeType, data);
   const isRunBlocked = useWorkflowRun().issues.some((issue) => isIssueForNode(issue, data.name));
 
   return (
@@ -34,7 +34,7 @@ export const KnownCanvasNode: FC<NodeProps<CanvasNode>> = ({ id, data, selected 
         <NodePortHandles type='source' count={nodeType.outputs.length} labels={nodeType.outputs.map(({ name }) => name)} />
         <NodeChangeMarker nodeId={id} />
         <NodeRunIndicator nodeId={id} />
-        {missing.length > 0 && <NodeIssuesBadge missingLabels={missing.map((property) => property.displayName)} />}
+        {missingLabels.length > 0 && <NodeIssuesBadge missingLabels={missingLabels} />}
       </div>
       <span className='mt-3 w-44 text-center text-xs leading-snug font-medium'>{data.name}</span>
       <span className='text-muted-foreground mt-1 font-mono text-[10px] tracking-widest whitespace-nowrap uppercase'>{nodeType.displayName}</span>

@@ -19,7 +19,7 @@ server {
     return 200 "ok\n";
   }
 
-  location ~ ^/(auth|workflow-node-types|workflow-executions|artifacts)(/|$) {
+  location ~ ^/(auth|workflow-node-types|workflow-executions|workflow-credentials|workflow-credential-types|artifacts)(/|$) {
     proxy_pass $backend;
   }
 

@@ -5,6 +5,7 @@ import { CanvasEdge, CanvasNode, WorkflowNodeType } from '../types/workflow-edit
 
 const NODE_TYPES: WorkflowNodeType[] = [
   {
+    credentials: [{ name: 'slackApi' }],
     type: 'slack',
     version: 1,
     displayName: 'Slack',
@@ -22,7 +23,7 @@ const node = (id: string, name: string, channel = '', x = 0): CanvasNode => ({
   id,
   type: 'workflowNode',
   position: { x, y: 0 },
-  data: { name, type: 'slack', typeVersion: 1, parameters: { channel } },
+  data: { name, type: 'slack', typeVersion: 1, parameters: { channel }, credentials: {} },
 });
 
 const edge = (id: string, source: string, target: string): CanvasEdge => ({ id, source, sourceHandle: '0', target, targetHandle: '0' });
@@ -38,6 +39,13 @@ describe('findCanvasChanges', () => {
         ['c', 'added'],
       ]),
     );
+  });
+
+  it('marks a node whose credential changed', () => {
+    const before = { nodes: [node('a', 'A')], edges: [] };
+    const after = { nodes: [{ ...node('a', 'A'), data: { ...node('a', 'A').data, credentials: { slackApi: { id: 'c1' } } } }], edges: [] };
+
+    expect(findCanvasChanges('v2', before, after, NODE_TYPES).nodes).toEqual(new Map([['a', 'changed']]));
   });
 
   it('matches edges by their ends, not their ids', () => {

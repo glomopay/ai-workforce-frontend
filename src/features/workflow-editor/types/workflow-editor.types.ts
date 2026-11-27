@@ -52,6 +52,9 @@ export interface JsonNodeProperty extends BaseNodeProperty {
 
 export type NodeProperty = StringNodeProperty | OptionsNodeProperty | JsonNodeProperty;
 
+// Keyed by credential type. Only the id is stored; names come from GET /workflow-credentials.
+export type NodeCredentials = Record<string, { id: string }>;
+
 export interface WorkflowNodeType {
   type: string;
   version: number;
@@ -64,6 +67,7 @@ export interface WorkflowNodeType {
   inputs: WorkflowPort[];
   outputs: WorkflowPort[];
   properties: NodeProperty[];
+  credentials?: { name: string }[];
 }
 
 export interface WorkflowNode {
@@ -73,6 +77,7 @@ export interface WorkflowNode {
   typeVersion: number;
   position: [number, number];
   parameters: NodeParameters;
+  credentials: NodeCredentials;
 }
 
 export interface WorkflowConnection {
@@ -115,7 +120,11 @@ export interface UpdateWorkflowInput {
 }
 
 export type WorkflowErrorResponse =
-  | { statusCode: number; message: string; errorCode: 'WORKFLOW_NOT_FOUND' | 'WORKFLOW_VERSION_CONFLICT' | 'WORKFLOW_VERSION_NOT_FOUND' }
+  | {
+      statusCode: number;
+      message: string;
+      errorCode: 'WORKFLOW_NOT_FOUND' | 'WORKFLOW_VERSION_CONFLICT' | 'WORKFLOW_VERSION_NOT_FOUND' | 'WORKFLOW_CREDENTIAL_NOT_FOUND';
+    }
   | { statusCode: number; message: string; errorCode: 'INVALID_WORKFLOW_GRAPH' | 'WORKFLOW_HAS_ISSUES'; errors: string[] };
 
 export interface ValidationErrorResponse {
@@ -123,7 +132,7 @@ export interface ValidationErrorResponse {
   errors: Record<string, string[]>;
 }
 
-export type CanvasNode = Node<Pick<WorkflowNode, 'name' | 'type' | 'typeVersion' | 'parameters'>, 'workflowNode'>;
+export type CanvasNode = Node<Pick<WorkflowNode, 'name' | 'type' | 'typeVersion' | 'parameters' | 'credentials'>, 'workflowNode'>;
 
 export type CanvasEdge = Edge<{ kind: WorkflowPortKind }>;
 

@@ -12,8 +12,8 @@ export const toEdgeKey = ({
 }: Pick<CanvasEdge, 'source' | 'sourceHandle' | 'target' | 'targetHandle'>): string => `${source}:${sourceHandle}->${target}:${targetHandle}`;
 
 const toComparableNode = (node: CanvasNode, nodeTypes: WorkflowNodeType[]): string => {
-  const [{ name, parameters }] = toWorkflowGraph([node], [], nodeTypes).nodes;
-  return toStableJson({ name, parameters });
+  const [{ name, parameters, credentials }] = toWorkflowGraph([node], [], nodeTypes).nodes;
+  return toStableJson({ name, parameters, credentials });
 };
 
 export const findCanvasChanges = (

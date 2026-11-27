@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as Oauth2CredentialDoneRouteImport } from './routes/oauth2-credential/done'
 import { Route as AuthenticatedWorkflowsIndexRouteImport } from './routes/_authenticated/workflows/index'
 import { Route as AuthenticatedWorkflowsWorkflowIdRouteRouteImport } from './routes/_authenticated/workflows/$workflowId/route'
 import { Route as AuthenticatedWorkflowsWorkflowIdIndexRouteImport } from './routes/_authenticated/workflows/$workflowId/index'
@@ -32,6 +33,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedRoute,
+} as any)
+const Oauth2CredentialDoneRoute = Oauth2CredentialDoneRouteImport.update({
+  id: '/oauth2-credential/done',
+  path: '/oauth2-credential/done',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedWorkflowsIndexRoute =
   AuthenticatedWorkflowsIndexRouteImport.update({
@@ -73,6 +79,7 @@ const AuthenticatedWorkflowsWorkflowIdExecutionsExecutionIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
+  '/oauth2-credential/done': typeof Oauth2CredentialDoneRoute
   '/workflows/$workflowId': typeof AuthenticatedWorkflowsWorkflowIdRouteRouteWithChildren
   '/workflows/': typeof AuthenticatedWorkflowsIndexRoute
   '/workflows/$workflowId/executions': typeof AuthenticatedWorkflowsWorkflowIdExecutionsRouteRouteWithChildren
@@ -82,6 +89,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
+  '/oauth2-credential/done': typeof Oauth2CredentialDoneRoute
   '/': typeof AuthenticatedIndexRoute
   '/workflows': typeof AuthenticatedWorkflowsIndexRoute
   '/workflows/$workflowId': typeof AuthenticatedWorkflowsWorkflowIdIndexRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
+  '/oauth2-credential/done': typeof Oauth2CredentialDoneRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/workflows/$workflowId': typeof AuthenticatedWorkflowsWorkflowIdRouteRouteWithChildren
   '/_authenticated/workflows/': typeof AuthenticatedWorkflowsIndexRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/oauth2-credential/done'
     | '/workflows/$workflowId'
     | '/workflows/'
     | '/workflows/$workflowId/executions'
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
+    | '/oauth2-credential/done'
     | '/'
     | '/workflows'
     | '/workflows/$workflowId'
@@ -123,6 +134,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/login'
+    | '/oauth2-credential/done'
     | '/_authenticated/'
     | '/_authenticated/workflows/$workflowId'
     | '/_authenticated/workflows/'
@@ -135,6 +147,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
+  Oauth2CredentialDoneRoute: typeof Oauth2CredentialDoneRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -159,6 +172,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/oauth2-credential/done': {
+      id: '/oauth2-credential/done'
+      path: '/oauth2-credential/done'
+      fullPath: '/oauth2-credential/done'
+      preLoaderRoute: typeof Oauth2CredentialDoneRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/workflows/': {
       id: '/_authenticated/workflows/'
@@ -261,6 +281,7 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
+  Oauth2CredentialDoneRoute: Oauth2CredentialDoneRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,5 +1,6 @@
 import { FC, useState } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { useParams } from '@tanstack/react-router';
 import { useEdges, useNodes } from '@xyflow/react';
 
 import { EmptyOutput } from './empty-output';
@@ -10,7 +11,10 @@ import { ITERATING_NODE_TYPES } from '../constants/workflow-editor.constants';
 import { useWorkflowRun } from '../hooks/use-workflow-run';
 import { CanvasNode } from '../types/workflow-editor.types';
 import { NodeRun, NodeRunStatus } from '../types/workflow-execution.types';
+import { buildNodeReturnTo } from '../utils/build-node-return-to';
 import { countLoopIterations } from '../utils/graph-rules';
+
+import { ReconnectNeededCredentials } from '@/features/workflow-credentials/public';
 
 import { cn } from '@/shared/utils/cn';
 
@@ -23,12 +27,13 @@ const EMPTY_OUTPUT_MESSAGES: Record<NodeRunStatus, string> = {
 
 interface NodeRunDataProps {
   executionId: string;
-  nodeId: string;
+  node: CanvasNode;
   runs: NodeRun[];
 }
 
-export const NodeRunData: FC<NodeRunDataProps> = ({ executionId, nodeId, runs }) => {
-  const nodeRuns = useSuspenseQuery(nodeRunsQueryOptions(executionId, nodeId, runs)).data;
+export const NodeRunData: FC<NodeRunDataProps> = ({ executionId, node, runs }) => {
+  const { workflowId } = useParams({ from: '/_authenticated/workflows/$workflowId' });
+  const nodeRuns = useSuspenseQuery(nodeRunsQueryOptions(executionId, node.id, runs)).data;
   const loopIds = useNodes<CanvasNode>()
     .filter(({ data }) => ITERATING_NODE_TYPES.includes(data.type))
     .map(({ id }) => id);
@@ -41,12 +46,12 @@ export const NodeRunData: FC<NodeRunDataProps> = ({ executionId, nodeId, runs })
     ),
   );
   const run = nodeRuns.at(Math.min(index, nodeRuns.length - 1));
-  if (!run) throw new Error(`No run details for node ${nodeId}`);
+  if (!run) throw new Error(`No run details for node ${node.id}`);
 
   const label =
     run.iteration === null
       ? `Run ${index + 1} of ${nodeRuns.length}`
-      : `Iteration ${run.iteration + 1} of ${countLoopIterations(edges, loopIds, nodeId, execution?.nodeRuns ?? [])}`;
+      : `Iteration ${run.iteration + 1} of ${countLoopIterations(edges, loopIds, node.id, execution?.nodeRuns ?? [])}`;
   const durationMs = run.finishedAt === null ? null : Date.parse(run.finishedAt) - Date.parse(run.startedAt);
 
   return (
@@ -58,9 +63,13 @@ export const NodeRunData: FC<NodeRunDataProps> = ({ executionId, nodeId, runs })
         {durationMs !== null && ` · ${durationMs} ms`}
       </span>
       {run.error && (
-        <p className='text-destructive border-destructive/40 bg-destructive/5 rounded-lg border p-3 text-xs leading-snug wrap-break-word whitespace-pre-wrap'>
-          {run.error.message}
-        </p>
+        <div className='border-destructive/40 bg-destructive/5 flex flex-col gap-3 rounded-lg border p-3'>
+          <p className='text-destructive text-xs leading-snug wrap-break-word whitespace-pre-wrap'>{run.error.message}</p>
+          <ReconnectNeededCredentials
+            credentialIds={Object.values(node.data.credentials).map(({ id }) => id)}
+            fallbackReturnTo={buildNodeReturnTo(workflowId, node.id)}
+          />
+        </div>
       )}
       {run.output ? <JsonBlock label='Output' value={run.output} /> : <EmptyOutput label='Output' message={EMPTY_OUTPUT_MESSAGES[run.status]} />}
     </div>

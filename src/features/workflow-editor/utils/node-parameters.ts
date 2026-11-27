@@ -1,5 +1,5 @@
 import { isPropertyVisible } from './is-property-visible';
-import { isJsonObject } from './json-object';
+import { formatJson, isJsonObject } from './json-object';
 import { JsonValue, NodeParameters, NodeProperty } from '../types/workflow-editor.types';
 
 export const withDefaultParameters = (properties: NodeProperty[], parameters: NodeParameters): NodeParameters => ({
@@ -14,7 +14,7 @@ export const isParameterEmpty = (value: JsonValue | undefined): boolean => {
   return value === undefined || value === null;
 };
 
-export const formatParameterValue = (value: JsonValue): string => (typeof value === 'string' ? value : JSON.stringify(value, null, 2));
+export const formatParameterValue = (value: JsonValue): string => (typeof value === 'string' ? value : formatJson(value));
 
 const findRequiredProperties = (properties: NodeProperty[], parameters: NodeParameters): NodeProperty[] =>
   properties.filter((property) => property.required && isPropertyVisible(property, parameters));

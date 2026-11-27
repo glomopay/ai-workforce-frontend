@@ -9,6 +9,7 @@ import { FIT_VIEW_OPTIONS } from '../constants/workflow-editor.constants';
 import { useConnectionRules } from '../hooks/use-connection-rules';
 import { useIsAssistantBusy } from '../hooks/use-is-assistant-busy';
 import { useNodeDrop } from '../hooks/use-node-drop';
+import { useOAuth2Return } from '../hooks/use-oauth2-return';
 import { useWorkflow } from '../hooks/use-workflow';
 import { useWorkflowNodeTypes } from '../hooks/use-workflow-node-types';
 import { toCanvasEdges, toCanvasNodes } from '../utils/workflow-graph';
@@ -26,6 +27,7 @@ export const WorkflowCanvas: FC<WorkflowCanvasProps> = ({ workflowId }) => {
   const { isValidConnection, onConnectEnd } = useConnectionRules();
   const { onDragOver, onDrop } = useNodeDrop();
   const isAssistantBusy = useIsAssistantBusy();
+  useOAuth2Return(workflowId);
 
   return (
     <div className='bg-canvas-glow relative flex-1' onDragOver={onDragOver} onDrop={onDrop}>

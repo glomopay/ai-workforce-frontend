@@ -71,7 +71,7 @@ export const ReplayNodeDetails: FC<ReplayNodeDetailsProps> = ({ execution, node 
       />
       {runs ? (
         <Suspense fallback={<RunDataLoading />}>
-          <NodeRunData executionId={execution.id} nodeId={node.id} runs={runs} />
+          <NodeRunData executionId={execution.id} node={node} runs={runs} />
         </Suspense>
       ) : (
         <EmptyOutput label='Output' message='This node did not run' />

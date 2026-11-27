@@ -1,6 +1,7 @@
 import { FC, Suspense } from 'react';
 
 import { EditFieldsPreview } from './edit-fields-preview';
+import { NodeCredentialField } from './node-credential-field';
 import { NodeNameInput } from './node-name-input';
 import { NodeParametersForm } from './node-parameters-form';
 import { NodeRunData } from './node-run-data';
@@ -9,9 +10,9 @@ import { NodeSettingsHeader } from './node-settings-header';
 import { NodeTypeIcon } from './node-type-icon';
 import { RunDataLoading } from './run-data-loading';
 import { EDIT_FIELDS_TYPE } from '../constants/workflow-editor.constants';
+import { useMissingLabels } from '../hooks/use-missing-labels';
 import { useWorkflowRun } from '../hooks/use-workflow-run';
 import { CanvasNode, WorkflowNodeType } from '../types/workflow-editor.types';
-import { findMissingProperties } from '../utils/node-parameters';
 import { isIssueForNode } from '../utils/run-issues';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
@@ -26,9 +27,12 @@ export const KnownNodeSettings: FC<KnownNodeSettingsProps> = ({ node, nodeType }
   const { execution, runsByNode, issues } = useWorkflowRun();
   const runs = runsByNode.get(node.id);
   const nodeIssues = issues.filter((issue) => isIssueForNode(issue, node.data.name));
-  const missingCount = findMissingProperties(nodeType.properties, node.data.parameters).length;
+  const missingCount = useMissingLabels(nodeType, node.data).length;
   const parameters = (
     <div className='flex flex-col gap-6'>
+      {nodeType.credentials?.map(({ name }) => (
+        <NodeCredentialField key={name} node={node} credentialTypeName={name} />
+      ))}
       {nodeType.properties.length ? (
         <NodeParametersForm node={node} nodeType={nodeType} />
       ) : (
@@ -64,7 +68,7 @@ export const KnownNodeSettings: FC<KnownNodeSettingsProps> = ({ node, nodeType }
           <TabsContent value='run'>
             {runs ? (
               <Suspense fallback={<RunDataLoading />}>
-                <NodeRunData executionId={execution.id} nodeId={node.id} runs={runs} />
+                <NodeRunData executionId={execution.id} node={node} runs={runs} />
               </Suspense>
             ) : (
               <p className='text-muted-foreground font-mono text-[10px] tracking-widest uppercase'>No runs in this execution yet</p>

@@ -33,6 +33,7 @@ export const useNodeDrop = () => {
         type: nodeType.type,
         typeVersion: nodeType.version,
         parameters: withDefaultParameters(nodeType.properties, parameters),
+        credentials: {},
       },
     });
   };

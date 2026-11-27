@@ -6,6 +6,7 @@ import {
   workflowNodeTypesQueryOptions,
   workflowQueryOptions,
 } from '@/features/workflow-editor/public';
+import { credentialsQueryOptions, credentialTypesQueryOptions } from '@/features/workflow-credentials/public';
 import { LoadingState } from '@/shared/components/public';
 
 export const Route = createFileRoute('/_authenticated/workflows/$workflowId')({
@@ -14,6 +15,8 @@ export const Route = createFileRoute('/_authenticated/workflows/$workflowId')({
       context.queryClient.ensureQueryData(workflowQueryOptions(params.workflowId)),
       context.queryClient.ensureQueryData(workflowNodeTypesQueryOptions),
       context.queryClient.ensureQueryData(assistantMessagesQueryOptions(params.workflowId)),
+      context.queryClient.ensureQueryData(credentialTypesQueryOptions),
+      context.queryClient.ensureQueryData(credentialsQueryOptions),
     ]),
   pendingComponent: () => <LoadingState label='Loading workflow' />,
   errorComponent: WorkflowNotFoundPage,

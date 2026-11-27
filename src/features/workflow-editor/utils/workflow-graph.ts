@@ -1,10 +1,11 @@
 import { findNodeType, hasNodeType } from './find-node-type';
+import { toSavedCredentials } from './node-credentials';
 import { toSavedParameters, withDefaultParameters } from './node-parameters';
 import { CanvasEdge, CanvasNode, WorkflowConnection, WorkflowGraph, WorkflowNode, WorkflowNodeType } from '../types/workflow-editor.types';
 
-// Nodes of a type the backend no longer serves keep their parameters exactly as loaded.
+// Nodes of a type the backend no longer serves keep their parameters and credentials exactly as loaded.
 export const toCanvasNodes = (nodes: WorkflowNode[], nodeTypes: WorkflowNodeType[]): CanvasNode[] =>
-  nodes.map(({ id, name, type, typeVersion, position: [x, y], parameters }) => ({
+  nodes.map(({ id, name, type, typeVersion, position: [x, y], parameters, credentials }) => ({
     id,
     type: 'workflowNode',
     position: { x, y },
@@ -15,6 +16,7 @@ export const toCanvasNodes = (nodes: WorkflowNode[], nodeTypes: WorkflowNodeType
       parameters: hasNodeType(nodeTypes, type, typeVersion)
         ? withDefaultParameters(findNodeType(nodeTypes, type, typeVersion).properties, parameters)
         : parameters,
+      credentials,
     },
   }));
 
@@ -33,16 +35,19 @@ export const toWorkflowGraph = (nodes: CanvasNode[], edges: CanvasEdge[], nodeTy
   const nodesById = new Map(nodes.map((node) => [node.id, node]));
 
   return {
-    nodes: nodes.map(({ id, position, data }) => ({
-      id,
-      name: data.name,
-      type: data.type,
-      typeVersion: data.typeVersion,
-      position: [position.x, position.y],
-      parameters: hasNodeType(nodeTypes, data.type, data.typeVersion)
-        ? toSavedParameters(findNodeType(nodeTypes, data.type, data.typeVersion).properties, data.parameters)
-        : data.parameters,
-    })),
+    nodes: nodes.map(({ id, position, data }) => {
+      const nodeType = hasNodeType(nodeTypes, data.type, data.typeVersion) ? findNodeType(nodeTypes, data.type, data.typeVersion) : undefined;
+
+      return {
+        id,
+        name: data.name,
+        type: data.type,
+        typeVersion: data.typeVersion,
+        position: [position.x, position.y],
+        parameters: nodeType ? toSavedParameters(nodeType.properties, data.parameters) : data.parameters,
+        credentials: nodeType ? toSavedCredentials(nodeType, data.credentials) : data.credentials,
+      };
+    }),
     connections: edges.map(({ source, sourceHandle, target, targetHandle, data }) => {
       const sourceNode = nodesById.get(source);
       if (!sourceNode) throw new Error(`Edge source node ${source} is not on the canvas`);
