@@ -6,6 +6,7 @@ import { CodingAgentIcon } from './coding-agent-icon';
 import { GitHubIcon } from './github-icon';
 import { GoogleSheetsIcon } from './google-sheets-icon';
 import { LibreChatIcon } from './librechat-icon';
+import { MetabaseIcon } from './metabase-icon';
 import { SlackIcon } from './slack-icon';
 import { ZohoDeskIcon } from './zoho-desk-icon';
 
@@ -17,6 +18,7 @@ const BUNDLED_ICONS: Record<string, FC<{ className: string }>> = {
   'zoho-desk': ZohoDeskIcon,
   github: GitHubIcon,
   'google-sheets': GoogleSheetsIcon,
+  metabase: MetabaseIcon,
   code: CodingAgentIcon,
 };
 
